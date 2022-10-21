@@ -9,18 +9,29 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs:
-      foor: ${{ steps.step1.outputs.foo }}
+      foo: ${{ steps.step1.outputs.foo }}
+      bar: ${{ steps.step1.outputs.bar }}
     steps:
       - name: step1
+        id: step1
         run: |
-          echo 'foo<<EOF' >> $GITHUB_OUTPUT
-          echo 'line1' >> $GITHUB_OUTPUT
-          echo "line2" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
+          echo 'foo<<EOF' >> $GITHUB_ENV
+          echo 'line1' >> $GITHUB_ENV
+          echo "line2" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+          echo 'foo=${{ env.foo }}' >> $GITHUB_OUTPUT
+          echo "bar=green" >> $GITHUB_OUTPUT
+      - name: step2
+        run: |
+          echo "foo: ${{ steps.step1.outputs.foo }}"
+          echo "bar: ${{ steps.step1.outputs.bar }}"
+          
   job2:
     needs: job1
     runs-on: ubuntu-latest
     steps:
       - name: step2
         run: |
-          echo ${{ needs.job1.outputs.foo }}
+          echo '${{ needs.job1.outputs.foo }}'
+          echo '${{ needs.job1.outputs.bar }}'
+          
